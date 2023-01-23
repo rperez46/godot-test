@@ -4,8 +4,14 @@ using System;
 public class Board : Node2DExtended
 {
     private int[,] _board;
+    private int _pieceWidth = 30;
     private int _width {get{return _board.GetLength(0);}}
     private int _height {get{return _board.GetLength(1);}}
+
+    public Vector2 GetSize()
+    {
+        return new Vector2(_width*_pieceWidth, _height*_pieceWidth);
+    }
 
     public Board() {_board = new int[10,20];}
     public Board(int x, int y){_board = new int[x, y];}
@@ -83,7 +89,7 @@ public class Board : Node2DExtended
     }
     private void drawBoard()
     {
-        var size = 30;
+        var size = _pieceWidth;
         var borderSize = 2;
         for (var j=0; j<_height; j++)
         {
@@ -101,7 +107,7 @@ public class Board : Node2DExtended
     }
     private void drawPieces()
     {
-        var size = 30;
+        var size = _pieceWidth;
         var borderSize = 2;
         for (var j=0; j<_height; j++)
         {

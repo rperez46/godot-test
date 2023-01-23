@@ -15,6 +15,8 @@ public class PuzzleScript : EventsHelper
         // Get board instance
         _board = GetNode<Board>("Board");
         AddNewActivePiece();
+        //center board on the screen.
+        _board.Position = new Vector2((GetViewportRect().Size.x - _board.GetSize().x) / 2, 0);
     }
     private void AddNewActivePiece()
     {
