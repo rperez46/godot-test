@@ -6,7 +6,7 @@ public class EventsHelper : Node2D
     private int _elapsedFrames = 0;
     private int _checkAfter = 4;
 
-    protected List<string> _pressedKeys = new List<string>();
+    private List<string> _pressedKeys = new List<string>();
     public override void _Input(InputEvent @event)
     {
         if (@event is InputEventKey eventKey)
@@ -33,4 +33,10 @@ public class EventsHelper : Node2D
         }
         return false;
     }
+    public void CheckInputs()
+    {
+        if (ShoudlCheckInputs())
+            CheckInputs(_pressedKeys);
+    }
+    public virtual void CheckInputs(List<string> _pressedKeys){}
 }

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class PuzzleScript : EventsHelper
 {
@@ -43,9 +44,8 @@ public class PuzzleScript : EventsHelper
     }
     // Boolean to check if the piece was already flipped(used to prevent the piece from flipping twice in a single keypress).
     private bool _isFliped = false;
-    public void CheckInputs()
+    public override void CheckInputs(List<string> _pressedKeys)
     {
-        if (!ShoudlCheckInputs())return;
         var isFliped = false;
         foreach (var key in _pressedKeys)
         {
