@@ -9,26 +9,29 @@ public class Piece : Node2DExtended
     public int _y;
     public int _width {get{return _map.GetLength(0);}}
     public int _height {get{return _map.GetLength(1);}}
+    private int _squareSize = 30;
+    private int _borderSize = 2;
 
     private Piece(){}
     // Map is a piece, x and y are the positions.
-    private Piece(int[,] map, int x, int y)
+    private Piece(int[,] map, int size, int x, int y)
     {
         _map = map;
         _x = x;
         _y = y;
+        _squareSize = size;
     }
     // Creates a random piece.
-    public static Piece GetRandomPiece(int x=0, int y=0)
+    public static Piece GetRandomPiece(int squareSize, int x=0, int y=0)
     {
         var random = new Random();
         PiecesTypes type = (PiecesTypes)random.Next(0, PiecesMaps._pieces.Count);
-        return CreatePiece(type, x, y);
+        return CreatePiece(type, squareSize, x, y);
     }
     // Create a piece of a specific type.
-    public static Piece CreatePiece(PiecesTypes type, int x, int y)
+    public static Piece CreatePiece(PiecesTypes type, int size, int x, int y)
     {
-        return new Piece(PiecesMaps._pieces[type], x, y);
+        return new Piece(PiecesMaps._pieces[type], size, x, y);
     }
     public int[,] GetMap()
     {
@@ -49,7 +52,7 @@ public class Piece : Node2DExtended
     }
     public Piece DummyFlipRight()
     {
-        var newPiece = new Piece(_map, _x, _y);
+        var newPiece = new Piece(_map, _squareSize, _x, _y);
         newPiece.FlipRight();
         return newPiece;
     }
@@ -77,8 +80,6 @@ public class Piece : Node2DExtended
 
     public override void _Draw()
     {
-        var size = 30;
-        var borderSize = 2;
         for (var j=0; j<_height; j++)
         {
             for (var i=0; i<_width; i++)
@@ -88,13 +89,13 @@ public class Piece : Node2DExtended
                 var color = ColorsCode.GetColor(_map[i,j]);
                 DrawRectWithBorder(
                     new Vector2(
-                        i * size + (_x * size),
-                        j * size + (_y * size)
+                        i * _squareSize + (_x * _squareSize),
+                        j * _squareSize + (_y * _squareSize)
                     ),
-                    new Vector2(size, size),
+                    new Vector2(_squareSize, _squareSize),
                     color,
                     Colors.Black,
-                    borderSize
+                    _borderSize
                 );
             }
         }

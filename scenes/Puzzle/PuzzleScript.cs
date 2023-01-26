@@ -6,6 +6,7 @@ public class PuzzleScript : EventsHelper
 {
     private Board _board;
     private Piece _activePiece;
+    private int _squareSize = 30;//Indivial square size(each piece is made of multiple squares).
 
     // Config.
     private int _updateAfter = 20;
@@ -15,13 +16,14 @@ public class PuzzleScript : EventsHelper
     {
         // Get board instance
         _board = GetNode<Board>("Board");
+        _board.SetSquareSize(_squareSize);
         AddNewActivePiece();
         //center board on the screen.
         _board.Position = new Vector2((GetViewportRect().Size.x - _board.GetSize().x) / 2, 0);
     }
     private void AddNewActivePiece()
     {
-        _activePiece = Piece.GetRandomPiece();
+        _activePiece = Piece.GetRandomPiece(_squareSize);
         _board.AddChild(_activePiece);
     }
     // Add the active piece to the board and create a new one, it also checks if the game is over.
@@ -74,7 +76,10 @@ public class PuzzleScript : EventsHelper
                 // Down
                 case "83":
                     if (_board.WillCollideIfMoveDown(_activePiece))
+                    {
                         SetPieceInPlace();
+                        CheckForClearLines();
+                    }
                     else
                         _activePiece.MoveDown();
                     break;
@@ -85,6 +90,28 @@ public class PuzzleScript : EventsHelper
         _activePiece.Update();
         _board.Update();
     }
+    public void AddClearLinesEffect(List<int> clearedLines)
+    {
+        foreach (var line in clearedLines)
+        {
+            GD.Print("Clearing line: " + line);
+            var effect = new ClearLineEffect(
+                new Vector2(0, line * _squareSize),
+                _squareSize,
+                (int)_board.GetSize().x
+            );
+            _board.AddChild(effect);
+        }
+    }
+    public void CheckForClearLines()
+    {
+        var clearedLines = _board.CheckForClearLines();
+        if (clearedLines.Count > 0)
+        {
+            // Add the efect of the lines being cleared.
+            AddClearLinesEffect(clearedLines);
+        }
+    }
     public override void _Process(float delta)
     {
         CheckInputs();
@@ -94,6 +121,7 @@ public class PuzzleScript : EventsHelper
             if (_board.WillCollideIfMoveDown(_activePiece))
             {
                 SetPieceInPlace();
+                CheckForClearLines();
             }
             else
             {
@@ -102,7 +130,6 @@ public class PuzzleScript : EventsHelper
                 _board.Update();
                 _elapsedFrames = 0;
             }
-            _board.CheckForClearLines();
         }
     }
 }

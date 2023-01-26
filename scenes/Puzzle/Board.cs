@@ -1,16 +1,21 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public class Board : Node2DExtended
 {
     private int[,] _board;
-    private int _pieceWidth = 30;
+    private int _squareSize = 30;
     private int _width {get{return _board.GetLength(0);}}
     private int _height {get{return _board.GetLength(1);}}
 
     public Vector2 GetSize()
     {
-        return new Vector2(_width*_pieceWidth, _height*_pieceWidth);
+        return new Vector2(_width*_squareSize, _height*_squareSize);
+    }
+    public void SetSquareSize(int size)
+    {
+        _squareSize = size;
     }
 
     public Board() {_board = new int[10,20];}
@@ -37,11 +42,13 @@ public class Board : Node2DExtended
             GD.Print("Board cell doesnt exist.");
         }
     }
-    public void CheckForClearLines()
+    public List<int> CheckForClearLines()
     {
-        // for (var j=0; j<_board.GetLength(1); j++)
+        var clearedLines = new List<int>();
+        int originalPosition =_height;
         for (var j=_height-1; j>0; j--)
         {
+            originalPosition--;
             var lineIsFull = true;
             var emptyCells = 0;
             for (var i=0; i<_width; i++)
@@ -54,6 +61,7 @@ public class Board : Node2DExtended
             }
             if (lineIsFull)
             {
+                clearedLines.Add(originalPosition);
                 CleanLine(j);
                 j++;
                 // If all the cells are empty, then dont need to check the rest of the lines(because it cant be lines on top of empty lines).
@@ -61,12 +69,13 @@ public class Board : Node2DExtended
                     break;
             }
         }
+        return clearedLines;
     }
     protected bool CleanLine(int y)
     {
         if (y > _height)
             return false;
-
+        // Move all the lines from "y" to 0 one line down.
         for (var j=y; j>0; j--)
         {
             for (var i=0; i<_width; i++)
@@ -74,6 +83,7 @@ public class Board : Node2DExtended
                 _board[i,j] = _board[i,(j-1)];
             }
         }
+        // Delete the first line.
         for (var i=0; i<_width; i++)
         {
             _board[i, 0] = 0;
@@ -89,7 +99,7 @@ public class Board : Node2DExtended
     }
     private void drawBoard()
     {
-        var size = _pieceWidth;
+        var size = _squareSize;
         var borderSize = 2;
         for (var j=0; j<_height; j++)
         {
@@ -107,7 +117,7 @@ public class Board : Node2DExtended
     }
     private void drawPieces()
     {
-        var size = _pieceWidth;
+        var size = _squareSize;
         var borderSize = 2;
         for (var j=0; j<_height; j++)
         {
